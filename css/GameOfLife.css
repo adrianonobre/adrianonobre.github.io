@@ -1,0 +1,27 @@
+table {
+border: 1px solid black;
+border-collapse: collapse;
+}
+
+td {
+/* border: 0px solid black; */
+height: 35px;
+width: 35px;
+background: white;
+}
+
+td.alive {
+/* height: 35px;
+width: 35px; */
+background: url(../images/happy.jpeg);
+background-size: 35px 35px;
+background-repeat: no-repeat;
+}
+
+td.zombie {
+/* height: 35px;
+width: 35px; */
+background: url(../images/zombie.jpeg);
+background-size: 35px 35px;
+background-repeat: no-repeat;
+}

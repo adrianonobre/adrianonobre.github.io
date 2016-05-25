@@ -1,19 +1,30 @@
-function GameOfLife(size, parentEl) {
+function GameOfLife(size, parentEl, btnStart, btnReset, btnStop) {
 	this._size = parseInt(size);
 	this._parentEl = parentEl;
 	this._table = null;
-	this._stopRequested = { stop: false };
+	
+	var gameScope = this;
+	btnStart.onclick = function() {gameScope.start.call(gameScope)};
+	btnReset.onclick = function() {gameScope.init.call(gameScope)};
+	btnStop.onclick = function() {gameScope.stop.call(gameScope)};
 	
 	this._makeCellAlive = function() {
-		this.className= "alive";
-		this.setAttribute("state", "alive");
+		this.className = "alive";
 	};
+	
+	this._setStateRunning = function(isRunning) {
+		btnStart.disabled = isRunning;
+		btnReset.disabled = isRunning;
+		btnStop.disabled = !isRunning;
+	}
 }
 
 GameOfLife.prototype = {
 	constructor : GameOfLife,
 
 	init : function() {
+		this._setStateRunning(false);
+		
 		this._clearEl(this._parentEl);
 
 		var div = document.createElement("div");
@@ -42,23 +53,22 @@ GameOfLife.prototype = {
 	},
 	
 	stop : function() {
-		this._stopRequested.stop = true;
+		this._stopRequested = true;
 	},
 	
 	start : function() {
-		this._stopRequested.stop = false;
+		this._setStateRunning(true);
+		this._stopRequested = false;
 		
-		var table = this._table;
-		var size = this._size;
-		var stopRequested = this._stopRequested;
+		var gameScope = this;
 		
 		var tick = function() {
 			var computeNeighbors = function() {
-				var counts = new Array(size);
-				for (var r = 0; r < size; r++) {
-					counts[r] = new Array(size);
+				var counts = new Array(gameScope._size);
+				for (var r = 0; r < gameScope._size; r++) {
+					counts[r] = new Array(gameScope._size);
 	
-					for (var c = 0; c < size; c++) {
+					for (var c = 0; c < gameScope._size; c++) {
 						var nw = isAlive(r - 1, c - 1);
 						var n = isAlive(r - 1, c);
 						var ne = isAlive(r - 1, c + 1);
@@ -78,13 +88,13 @@ GameOfLife.prototype = {
 			var isAlive = function(r, c) {
 				var result = 0;
 	
-				var outOfBounds = r < 0 || c < 0 || r >= size
-						|| c >= size;
+				var outOfBounds = r < 0 || c < 0 || r >= gameScope._size
+						|| c >= gameScope._size;
 				if (!outOfBounds) {
-					var cell = table.rows[r].cells[c];
-					if (cell.getAttribute("state") === "alive") {
+					var cell = gameScope._table.rows[r].cells[c];
+					if (cell.className === "alive") {
 						result = 1;
-					} else if (cell.getAttribute("state") === "zombie") {
+					} else if (cell.className === "zombie") {
 						result = -10;
 					} else {
 						result = 0;
@@ -93,46 +103,49 @@ GameOfLife.prototype = {
 				return result;
 			};
 	
-			var refresh = function() {
+			var update = function() {
+				var boardChanged = false;
 				var counts = computeNeighbors();
-				for (var r = 0; r < size; r++) {
+				for (var r = 0; r < gameScope._size; r++) {
 	
-					for (var c = 0; c < size; c++) {
-						var cell = table.rows[r].cells[c];
-						var isAlive = cell.getAttribute("state") === "alive";
-						var isZombie = cell.getAttribute("state") === "zombie";
+					for (var c = 0; c < gameScope._size; c++) {
+						var cell = gameScope._table.rows[r].cells[c];
+						var isAlive = cell.className === "alive";
+						var isZombie = cell.className === "zombie";
 	
 						var liveNeighbors = counts[r][c];
 						
 						if (isAlive) {
 							if (liveNeighbors > 5) {
 								cell.className= "zombie";
-								cell.setAttribute("state", "zombie");
+								boardChanged = true;
 								
 							} else if (liveNeighbors < 2 || liveNeighbors > 3) {
 								cell.className= "";
-								cell.removeAttribute("state");
+								boardChanged = true;
 							}
 							
 						} else if(isZombie) {
 							if (liveNeighbors <= 0) {
 								cell.className= "";
-								cell.removeAttribute("state");
+								boardChanged = true;
 							}
 						
 						} else {
 							if (liveNeighbors == 3) {
 								cell.className= "alive";
-								cell.setAttribute("state", "alive");
+								boardChanged = true;
 							}
 						}
 					}
 				}
+				return boardChanged;
 			};
 
-			refresh();
-			if (!stopRequested.stop) {
+			if (!gameScope._stopRequested && update()){
 				setTimeout(tick, 1000);
+			} else {
+				gameScope._setStateRunning(false);
 			}
 		};
 		tick();

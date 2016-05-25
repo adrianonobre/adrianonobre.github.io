@@ -1,48 +1,30 @@
 <html>
 
 <head>
+<link rel="stylesheet" type="text/css" href="css/GameOfLife.css">
 <script type="text/javascript" src="js/GameOfLife.js"></script>
-<style type="text/css">
-table {
-border: 1px solid black;
-border-collapse: collapse;
-}
-td {
-#border: 0px solid black;
-height: 35px;
-width: 35px;
-background: white;
-}
-
-td.alive {
-height: 35px;
-width: 35px;
-background: url(images/happy.jpeg);
-background-size: 35px 35px;
-background-repeat: no-repeat;
-}
-
-td.zombie {
-height: 35px;
-width: 35px;
-background: url(images/zombie.jpeg);
-background-size: 35px 35px;
-background-repeat: no-repeat;
-}
-
-
-</style>
 </head>
 
 <body>
-    <button onclick="gameOfLife.start()">Start</button>
-    <button onclick="gameOfLife.stop()">Stop</button>
-    <div id="board"></div>
-    <script type="text/javascript">
-					var board = document.getElementById("board");
-					gameOfLife = new GameOfLife(20, board);
-					gameOfLife.init();
-				</script>
+    <div style="margin: auto; width: 60%">
+        <img src="images/Title.png" style="width: 750px">
+
+        <div style="margin: auto; width: 40%">
+            <button id="btnStart">Start</button>
+            <button id="btnReset">Reset</button>
+            <button id="btnStop">Stop</button>
+        </div>
+        <div id="board"></div>
+        <script type="text/javascript">
+			var board = document.getElementById("board");
+			var btnStart = document.getElementById("btnStart");
+            var btnReset = document.getElementById("btnReset");
+			var btnStop = document.getElementById("btnStop");
+			var gameOfLife = new GameOfLife(20, board, btnStart, btnReset, btnStop);
+			
+			gameOfLife.init();
+		</script>
+    </div>
 </body>
 
 </html>
