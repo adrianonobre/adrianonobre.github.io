@@ -1,30 +1,136 @@
 <html>
-
 <head>
-<link rel="stylesheet" type="text/css" href="css/GameOfLife.css">
-<script type="text/javascript" src="js/GameOfLife.js"></script>
+<title>Unary Turtle Logo</title>
+<script type="text/javascript" src="js/LogoUnary.js"></script>
+<script type="text/javascript" src="js/samples.js"></script>
+<style type="text/css">
+table.main-board {
+    border-spacing: 0px;
+}
+
+table.main-board td {
+    background-color: Lavender;
+    text-align: center;
+    height: 18px;
+    width: 10px;
+    font-size: large;
+    padding: 0px;
+    margin: 0px;
+    border-spacing: 0px;
+    font-family: monospace;
+}
+
+table.main-board td.turtle-up {
+    background-image: url(images/turtle-up.png);
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+table.main-board td.turtle-down {
+    background-image: url(images/turtle-down.png);
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+table.main-board td.turtle-right {
+    background-image: url(images/turtle-right.png);
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+table.main-board td.turtle-left {
+    background-image: url(images/turtle-left.png);
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+textarea {
+    background-color: black;
+    color: white;
+}
+
+input[type="button"] {
+    font-size: 25;
+    width: 80px;
+    height: 40px;
+    border: 2px solid Gainsboro;
+}
+
+input[type="radio"] {
+    font-size: large;
+    font-family: Arial, Helvetica, sans-serif, monospace, italic;
+    width: 20px;
+}
+label {
+    font-size: large;
+}
+    
+</style>
 </head>
 
 <body>
-    <div style="margin: auto; width: 60%">
-        <img src="images/Title.png" style="width: 750px">
+    <table>
+        <tr>
+            <td rowspan="2"><textarea id="commands" cols="20" rows="40" style="height: 100%;font-size: large; font-family: monospace"></textarea></td>
+            <td><div id="anchor" style="width: 100%"></td>
+            <td valign="top">
+                <input id="speedNormal" type="radio" name="speed" checked value="normal"/><label style="font-family: 'Times New Roman', Times, serif">Normal</label><br>
+                <input id="speedFast" type="radio" name="speed" value="turbo"/><label style="font-family: Arial, Helvetica, monospace">Turbo</label><br>
+                <input id="speedWarp" type="radio" name="speed" value="warp"/><label style="font-family: Arial, Helvetica, monospace; font-style: italic;">Warp<br>
+                <br>
+                <img id="speedImage" src="images/turtle-normal.png"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <td valign="top">
+                            <input title="Execute program" style="vertical-align:top;" id="execute" type="button" value="&#x270e;"></input><br>
+                            <input title="Clear canvas" style="vertical-align:top;" id="clear" type="button" value="&#x239a;"></input><br>
+                            <br><br><br><br>
+                            <input title="Convert into program" style="vertical-align:top;" id="transfer" type="button" value="&#x261c;"></input>
+                        </td>
+                        <td>
+                            <textarea title="Paste ASCII art here to teach the turtle" id="transferPad" cols="80" rows ="25" style="font-size: normal; font-family: monospace"></textarea>
+                            <input title="Load sample ASCII art" style="vertical-align:top;" id="sample" type="button" value="&#xbf;&#x3f;"></input><br>
+                        </td>    
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 
-        <div style="margin: auto; width: 40%">
-            <button id="btnStart">Start</button>
-            <button id="btnReset">Reset</button>
-            <button id="btnStop">Stop</button>
-        </div>
-        <div id="board"></div>
-        <script type="text/javascript">
-			var board = document.getElementById("board");
-			var btnStart = document.getElementById("btnStart");
-            var btnReset = document.getElementById("btnReset");
-			var btnStop = document.getElementById("btnStop");
-			var gameOfLife = new GameOfLife(20, board, btnStart, btnReset, btnStop);
-			
-			gameOfLife.init();
-		</script>
-    </div>
+    <script type="text/javascript">
+        var board = document.getElementById("anchor");
+        var commandBox = document.getElementById("commands");
+        var logo = new LogoUnary(80, 25, board, commandBox);
+        logo.start();
+        
+        var executeBtn = document.getElementById("execute");
+        executeBtn.addEventListener("click", function () {logo.executeCommands()});
+        
+        var clear = document.getElementById("clear");
+        clear.addEventListener("click", function () {logo.start()});
+        
+        var transferPad = document.getElementById("transferPad");
+        var transferBtn = document.getElementById("transfer");
+        transferBtn.addEventListener("click", function() { logo.drawingToProgram(transferPad);});
+        
+        var speedImage = document.getElementById("speedImage");
+        var speedNormal = document.getElementById("speedNormal");
+        speedNormal.addEventListener("click", function() { logo.setInterval(100); speedImage.src="images/turtle-normal.png" });
+        
+        var speedFast = document.getElementById("speedFast");
+        speedFast.addEventListener("click", function() { logo.setInterval(10); speedImage.src="images/turtle-turbo.png" });
+        
+        var speedFast = document.getElementById("speedWarp");
+        speedFast.addEventListener("click", function() { logo.setInterval(0); speedImage.src="images/warp-speed.png" });
+        
+        var sample = document.getElementById("sample");
+        sample.addEventListener("click", function() { transferPad.value = getRandomSample(); });
+        
+    </script>
 </body>
 
 </html>
